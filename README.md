@@ -1,6 +1,6 @@
 # Brief
 Forked from [lxtGH/PFSegNets](https://github.com/lxtGH/PFSegNets), this page to record configuration info.    
-paper [cvpr-version](https://openaccess.thecvf.com/content/CVPR2021/papers/Li_PointFlow_Flowing_Semantics_Through_Points_for_Aerial_Image_Segmentation_CVPR_2021_paper.pdf)  [axivr](https://arxiv.org/pdf/2103.06564v1.pdf)
+paper [cvpr-version](https://openaccess.thecvf.com/content/CVPR2021/papers/Li_PointFlow_Flowing_Semantics_Through_Points_for_Aerial_Image_Segmentation_CVPR_2021_paper.pdf) / [axivr-version](https://arxiv.org/pdf/2103.06564v1.pdf)
 
 # Enviorenmet Config
 this version cfged in Win10, with conda.
