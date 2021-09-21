@@ -1,20 +1,24 @@
 # Brief
 Forked from [lxtGH/PFSegNets](https://github.com/lxtGH/PFSegNets), this page to record configuration info.    
-paper [cvpr-version](https://openaccess.thecvf.com/content/CVPR2021/papers/Li_PointFlow_Flowing_Semantics_Through_Points_for_Aerial_Image_Segmentation_CVPR_2021_paper.pdf) / [arxiv-version](https://arxiv.org/pdf/2103.06564v1.pdf)
+Paper [cvpr-version](https://openaccess.thecvf.com/content/CVPR2021/papers/Li_PointFlow_Flowing_Semantics_Through_Points_for_Aerial_Image_Segmentation_CVPR_2021_paper.pdf)/[arxiv-version](https://arxiv.org/pdf/2103.06564v1.pdf)
 
 # Enviorenmet Config
-this version cfged in Win10, with conda.
-The master branch works with PyTorch 1.5 and python 3.7.6.
+This version cfged in Win10, I use anaconda to create virtual env. Installing cuda11 & corresponding cudnn version before is necessary.
 ```
 conda create -n pfsegnet python=3.7.6
-
+pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+```
+other lib is needed:
+```
+pip install opencv-python
+pip install natsort
 ```
 
 # DataSet preparation
-1. Downloading [iSAID](https://captain-whu.github.io/iSAID/), [Potsdam](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-potsdam/) and
- [Vahihigen](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-vaihingen/) dataset.
+1. [Potsdam](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-potsdam/) and
+ [Vahihigen](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-vaihingen/) dataset. ( [iSAID](https://captain-whu.github.io/iSAID/) didn't be used here.)
  
-2. Using scripts to crop [iSAID](tools/split_iSAID.py) and [Potsdam, Vaihigen](tools/split_isprs.py) into patches.
+2. Using scripts to crop Potsdam, Vaihigen(tools/split_isprs.py) into patches.
 3. Using scripts to convert the original mask of [iSAID](tools/convert_iSAID_mask2graymask.py) and [Potsdam, Vaihigen](tools/convert_isprs_mask2graymask.py) 
 into gray mask for training and evaluating.
 4. Finally, you can either change the `config.py` or do the soft link according to the default path in config.
