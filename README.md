@@ -8,54 +8,69 @@ This version cfged in Win10, I use anaconda to create virtual env. Installing cu
 conda create -n pfsegnet python=3.7.6
 pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 ```
-other lib is needed:
+other libs are needed:
 ```
 pip install opencv-python
 pip install natsort
+pip install tqdm
+pip install scikit-image
+pip install scipy
+pip install tensorboard
+pip install tensorboardX
 ```
 
 # DataSet preparation
-1. [Potsdam](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-potsdam/) and
+### 1 Download dataset
+ [Potsdam](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-potsdam/) and
  [Vahihigen](https://www2.isprs.org/commissions/comm2/wg4/benchmark/2d-sem-label-vaihingen/) dataset. ( [iSAID](https://captain-whu.github.io/iSAID/) didn't be used here.)
  
-2. Using scripts to crop Potsdam, Vaihigen(tools/split_isprs.py) into patches.
-3. Using scripts to convert the original mask of [iSAID](tools/convert_iSAID_mask2graymask.py) and [Potsdam, Vaihigen](tools/convert_isprs_mask2graymask.py) 
-into gray mask for training and evaluating.
-4. Finally, you can either change the `config.py` or do the soft link according to the default path in config.
-
-For example, suppose you store your iSAID dataset at `~/username/data/iSAID`, please update the dataset path in `config.py`,
+### 2 Select data
+I chose 2_Ortho_RGB.zip and 5_Labels_all.zip of Potsdam to do experiments, place them into the folder 'PFSegNets/dataset/'.
+The data is organized in the following format: 
 ```
-__C.DATASET.iSAID_DIR = '~/username/data/iSAID'
+/dataset/
+    └── train/
+        └── images/
+            ├── top_potsdam_2_10_RGB.tif
+            ├── top_potsdam_2_11_RGB.tif 
+            ...
+        └── masks/
+            ├── top_potsdam_2_10_label.tif
+            ├── top_potsdam_2_11_label.tif
+            ...
+    └── val/
+        ...
+    └── test/
+        ...
+```
+🔥 /val & /test have the same structures as /train .    
+🔥 I chose top_potsdam_4_13_RGB, top_potsdam_6_12_RGB and top_potsdam_7_8_RGB as verification data, and top_potsdam_3_13_RGB, top_potsdam_5_12_RGB as test data.
+
+### 3 convert labels to graymask
+```
+python convert_isprs_mask2graymask.py --phase train
+python convert_isprs_mask2graymask.py --phase val
+python convert_isprs_mask2graymask.py --phase test
+```
+
+### 4 split imgs into patches    
+```
+python split_isprs.py
+```
+🔥 remember to change the paths to yours.
+
+### 5 change filepaths in `config.py`
+```
+__C.DATASET.POSDAM_DIR = #yourpath#
 ``` 
-Or, you can link the data path into current folder.
 
-```
-mkdir data 
-cd data
-ln -s your_iSAID_root_data_path iSAID
-```
 
-Actually, the order of steps 2 and 3 is interchangeable.
+# Pretrained Models
 
-## Pretrained Models
-
-Baidu Pan Link: https://pan.baidu.com/s/1MWzpkI3PwtnEl1LSOyLrLw  4lwf 
-
+Baidu Pan Link: https://pan.baidu.com/s/1MWzpkI3PwtnEl1LSOyLrLw  4lwf     
 Google Drive Link: https://drive.google.com/drive/folders/1C7YESlSnqeoJiR8DWpmD4EVWvwf9rreB?usp=sharing
 
-After downloading the pretrained ResNet, you can either change the model path of `network/resnet_d.py` or do the soft link according to the default path in `network/resnet_d.py`.
-
-For example, 
-Suppose you store the pretrained ResNet50 model at `~/username/pretrained_model/resnet50-deep.pth`, please update the 
-dataset path in Line315 of `config.py`,
-```
-model.load_state_dict(torch.load("~/username/pretrained_model/resnet50-deep.pth", map_location='cpu'))
-```
-Or, you can link the pretrained model path into current folder.
-```
-mkdir pretrained_models
-ln -s your_pretrained_model_path path_to_pretrained_models_folder
-```
+change the model paths of `network/resnet_d.py`
 
 # Model Checkpoints
 
@@ -66,6 +81,12 @@ ln -s your_pretrained_model_path path_to_pretrained_models_folder
 </tbody></table>
 
 # Evaluation
+```
+python eval.py --dataset Posdam --arch network.pointflow_resnet_with_max_avg_pool.DeepR50_PF_maxavg_deeply --inference_mode  whole --single_scale --scales 1.0 --split test --cv_split 0 --avgpool_size 9 --edge_points 128 --match_dim 64 --resize_scale 896 --mode semantic --no_flip --ckpt_path CHECKPOINTPATH --snapshot SAVERESULTS
+```
+🔥 'CHECKPOINTPATH' is checkpoints path, eg: E:\PFSegNets\checkpoints\pfnet_r50_postdam.pth    
+🔥 'SAVERESULTS' is results path, eg: E:\PFSegNets\results    
+
 
 For example, when evaluating PFNet on validation set of iSAID dasaset:
 ```bash
